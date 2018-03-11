@@ -35,9 +35,10 @@ char* DEFAULT_STORAGE = "students.txt";
 struct student
 {
     char *stu_id;
-    char *first_name;
-    char *last_name;
-    char *sex;
+    char *name;
+//    char* first_name;
+//    char* last_name;
+//    char* sex;
     //    char birthday[20];
     //    char academy[20];
     //    char major[10];
@@ -50,8 +51,9 @@ struct student
 typedef enum student_property
 {
     stu_id,
-    first_name,
-    last_name,
+    name,
+//    first_name,
+//    last_name,
     sex,
     birthday,
     academy,
@@ -111,9 +113,10 @@ int insert(struct student_node *stu_list)
 void show_student(struct student stu)
 {
     // if stu is null, stu_id is null and if use stu.name, will get error, maybe because stu.stu_id is null and not able to identify stu.name address.
-    printf("stu_id: %s\n", stu.stu_id);
-    printf("name: %s %s\n", stu.first_name, stu.last_name);
-    printf("sex: %s\n", stu.sex);
+    printf("stu_id: %s\n",stu.stu_id);
+    printf("name: %s\n", stu.name);
+//    printf("name: %s %s\n", stu.first_name, stu.last_name);
+//    printf("sex: %s\n", stu.sex);
 }
 
 void show_students(struct student_node *head)
@@ -195,13 +198,20 @@ struct student_node * load_students_from_storage(char* file_name)
                     stu_node->stu.stu_id = token;
 //                    strcpy(stu_node->stu.stu_id, token);//This usage will cause thread access issue.
                     break;
-                case first_name:
-                    stu_node->stu.first_name = token;
+                case name:
+                    stu_node->stu.name = token;
                     break;
-                    
-                case last_name:
-                    stu_node->stu.last_name = token;
-                    break;
+//                case first_name:
+//                    stu_node->stu.first_name = token;
+//                    break;
+//
+//                case last_name:
+//                    stu_node->stu.last_name = token;
+//                    break;
+//
+//                case sex:
+//                    stu_node->stu.sex = token;
+//                    break;
                     
                 default:
                     break;
@@ -213,8 +223,9 @@ struct student_node * load_students_from_storage(char* file_name)
         
         if (head == NULL)
         {
-            head = stu_node;
+            head = (struct student_node *)malloc(LEN);
             tail = head;
+            head->stu = stu_node->stu;
             tail->next = NULL;
         }else
         {

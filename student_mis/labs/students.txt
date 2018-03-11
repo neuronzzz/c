@@ -1,2 +1,2 @@
-1, ryan, male
-2, flora, female
+1, ryan
+2, flora
