@@ -1,15 +1,14 @@
 //
-//  main.c
+//  file_structor.h
 //  labs
 //
 //  Created by Ryan Zhang on 11/03/2018.
 //  Copyright © 2018 yao. All rights reserved.
 //
 
+#ifndef file_structor_h
+#define file_structor_h
+
 #include <stdio.h>
 
-int main(int argc, const char * argv[]) {
-    // insert code here...
-    printf("Hello, World!\n");
-    return 0;
-}
+#endif /* file_structor_h */
