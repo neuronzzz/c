@@ -35,10 +35,10 @@ char* DEFAULT_STORAGE = "students.txt";
 struct student
 {
     char *stu_id;
-    char *name;
-//    char* first_name;
-//    char* last_name;
-//    char* sex;
+//    char *name;
+    char *first_name;
+    char *last_name;
+    char *sex;
     //    char birthday[20];
     //    char academy[20];
     //    char major[10];
@@ -51,9 +51,9 @@ struct student
 typedef enum student_property
 {
     stu_id,
-    name,
-//    first_name,
-//    last_name,
+//    name,
+    first_name,
+    last_name,
     sex,
     birthday,
     academy,
@@ -114,8 +114,8 @@ void show_student(struct student stu)
 {
     // if stu is null, stu_id is null and if use stu.name, will get error, maybe because stu.stu_id is null and not able to identify stu.name address.
     printf("stu_id: %s\n",stu.stu_id);
-    printf("name: %s\n", stu.name);
-//    printf("name: %s %s\n", stu.first_name, stu.last_name);
+//    printf("name: %s\n", stu.name);
+    printf("name: %s %s\n", stu.first_name, stu.last_name);
 //    printf("sex: %s\n", stu.sex);
 }
 
@@ -155,26 +155,28 @@ char * strtrim(char *s) {
 //load students from storage x
 struct student_node * load_students_from_storage(char* file_name)
 {
-    struct student_node *head = NULL;
-    struct student_node *tail = NULL;
-    
     FILE *fp = fopen(file_name, "r");
     
     if (fp == NULL) {
-        fprintf(stderr,"null pointer");
+//        fprintf(stderr,"null pointer");
         //exit(EXIT_FAILURE);
         printf("file not exist");
         //        return NULL;
-        return head;
+        return NULL;
     }
     
-    const char *split = ",";
+    struct student_node *head, *tail = NULL;
+    head = NULL;
     
     char line[BUFF_SIZE];
+    const char *split = ",";
     
     while (fgets(line, BUFF_SIZE, (FILE*)fp) != NULL)
     {
-        struct student_node *stu_node = (struct student_node *)malloc(LEN);
+        struct student_node *node = (struct student_node *)malloc(LEN);
+        struct student *stu = (struct student *)malloc(LEN);
+        
+        node->stu = *stu;
         
         //first time strtok
         char *token = strtok(line, split);
@@ -193,25 +195,27 @@ struct student_node * load_students_from_storage(char* file_name)
             //            phone,
             //            email
             token = strtrim(token);
+            printf("%s\n", token);
             switch (i) {
                 case stu_id:
-                    stu_node->stu.stu_id = token;
-//                    strcpy(stu_node->stu.stu_id, token);//This usage will cause thread access issue.
+                    node->stu.stu_id = strdup(token);
+//                    strcpy(node->stu.stu_id, token);//This usage will cause thread access issue.//这个会报EXC_BAD_ACCESS错误，主要是由于stu.stu_id还没有分配地址，而strcpy是直接赋值内容，由于没有地址，没有任何空间，直接copy内容到地址所在的内存无法操作，而在生命一个变量的时候，或者一个地址的时候，如果不赋值为NULL，默认会分配一个随机地址？或者在当前栈的位置分配一个地址。
+//                    strcpy(stu->stu_id, token);
                     break;
-                case name:
-                    stu_node->stu.name = token;
+                case first_name:
+                    node->stu.first_name = strdup(token);
+//                    strcpy(stu->last_name, token);
                     break;
-//                case first_name:
-//                    stu_node->stu.first_name = token;
-//                    break;
-//
-//                case last_name:
-//                    stu_node->stu.last_name = token;
-//                    break;
-//
-//                case sex:
-//                    stu_node->stu.sex = token;
-//                    break;
+
+                case last_name:
+                    node->stu.last_name = strdup(token);
+//                    strcpy(stu->last_name, token);
+                    break;
+
+                case sex:
+                    node->stu.sex = strdup(token);
+//                    strcpy(stu->sex, token);
+                    break;
                     
                 default:
                     break;
@@ -223,21 +227,20 @@ struct student_node * load_students_from_storage(char* file_name)
         
         if (head == NULL)
         {
-            head = (struct student_node *)malloc(LEN);
+            head = node;
             tail = head;
-            head->stu = stu_node->stu;
             tail->next = NULL;
+
         }else
         {
-            tail->next = stu_node;
-            tail = stu_node;
+            tail->next = node;
+            tail = node;
             tail->next = NULL;
         }
-//        tail->next = stu_node;
-//        tail = stu_node;
-//        tail->next = NULL;
-        
     }
+    
+//    free(node);           //p1->num为0的时候跳出了while循环，并且释放node
+//    node = NULL;          //特别不要忘记把释放的变量清空置为NULL,否则就变成"野指针"，即地址不确定的指针
     
     return head;
 }
